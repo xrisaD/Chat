@@ -5,7 +5,7 @@
 * RESTful Web Service developed with Spring Boot
 * React client
 
-# Technologies used:
+### Technologies used:
 * RESTful Web Services
 * WebSockets
 * JPA (Java Persistence Architecture)
