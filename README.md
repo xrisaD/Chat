@@ -8,7 +8,7 @@
 ### Technologies used:
 * RESTful Web Services
 * WebSockets
-* JPA (Java Persistence Architecture)
+* Hibernate: implementation of JPA (Java Persistence Architecture)
 * React: Front-end framework
 * Axios: Javascript library used to make HTTP requests
 * H2 Database
