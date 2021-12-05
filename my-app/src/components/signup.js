@@ -5,9 +5,10 @@ import Col from 'react-bootstrap/Col';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import empty from "is-empty";
 
 
 const Signup = () => {
@@ -21,14 +22,16 @@ const Signup = () => {
   const [city, setCity] = useState('');
   const [zipCode, setZipCode] = useState('');
   const [password, setPassword] = useState('');
-    
-  const handleSubmit = (event) => {
+  const [errors, setErrors] = useState({});
   
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    const allErrors = {};
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
-      console.log("false")
-      event.preventDefault();
       event.stopPropagation();
+      setValidated(false);
     } else {
       const endpoint = "http://localhost:8080/api/v1/auth/signup";
       const user_object = {
@@ -38,18 +41,24 @@ const Signup = () => {
           lastname: lastname,
           email: email,
           city: city,
-          zipCode: zipCode,
-          password: password
+          zipCode: zipCode
         };
-      axios.post(endpoint, user_object).then(res => {console.log("true");
-        localStorage.setItem("isAuthenticated", true);
-        localStorage.setItem("authorization", res.data.token);
-        navigate("/dashboard");
-      }).catch(error => {
-        console.log(error)
-      });
-  }
-  setValidated(true);
+      
+        // sign up request
+        axios.post(endpoint, user_object).then(res => {
+          console.log("true");
+          localStorage.setItem("isAuthenticated", true);
+          localStorage.setItem("authorization", res.data.token);
+          navigate("/dashboard");
+        }).catch(error => {
+          if (error.response.status === 412) {
+            allErrors.username = "This username exists select a different username";
+            setErrors(allErrors);
+          }
+          setValidated(false);
+        });
+    }
+   
   };
 
   return (
@@ -78,17 +87,18 @@ const Signup = () => {
           <Form.Control.Feedback type="invalid">Please enter your last name</Form.Control.Feedback>
         </Form.Group>
         <Form.Group as={Col} md="4" controlId="validationCustomUsername">
-          <Form.Label>User name :</Form.Label>
+          <Form.Label>Username :</Form.Label>
           <InputGroup hasValidation>
             <Form.Control
               type="text"
               placeholder="Username"
               aria-describedby="inputGroupPrepend" 
               required
+              isInvalid={!!errors.username}
               value={username} onChange={e => setUsername(e.target.value)}
             />
             <Form.Control.Feedback type="invalid">
-              Please choose a username.
+              {errors.username}
             </Form.Control.Feedback>
           </InputGroup>
         </Form.Group>

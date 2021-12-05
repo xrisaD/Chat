@@ -8,6 +8,10 @@ import axios from "axios";
 import { myInterceptor } from "./Interceptors";
 import React, { useState, useEffect } from "react"; 
 import Dashboard from "./components/dashboard";
+import {CustomNavbar}  from "./components/Navbar";
+import Chat from "./components/Chat";
+import Room from "./components/Room";
+
 function App() {
   window.React1 = require('react');
 
@@ -20,10 +24,12 @@ function App() {
           <Route exact path="/signup" element={<IsAuth redirectTo="/dashboard"> <Signup/> </IsAuth>} />
 
           <Route exact path="/dashboard" element={ <RequireAuth redirectTo="/login"> <Dashboard/> </RequireAuth>}/>
-          
+
+          <Route exact path="/room/:r" element={ <RequireAuth redirectTo="/login"> <Room/> </RequireAuth>}/>
+
           <Route exact path="/" element={<Home/>} />
 
-          <Route path="*" element={<Navigate to="/login" />} />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
       </header>
@@ -33,7 +39,7 @@ function App() {
 
 function IsAuth({ children, redirectTo }) {
   const isAuthenticated = localStorage.getItem("isAuthenticated");
-  if (isAuthenticated) {
+  if (isAuthenticated === true) {
     return <Navigate to={redirectTo} />
   } else {
     return children;
@@ -73,7 +79,7 @@ function RequireAuth({ children, redirectTo }) {
 }
 
 async function get() {
-  const endpoint = "http://localhost:8080/api/v1/authenticate";
+  const endpoint = "http://localhost:8080/api/v1/authorize";
   var isAuthenticated = null;
 
   myInterceptor();

@@ -1,6 +1,7 @@
 package com.chat.controllers;
 
 import com.chat.domain.User;
+import com.chat.repositories.RoomRepository;
 import com.chat.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,15 +20,13 @@ public class TestController {
     @Autowired
     private UserDetailsService userDetailsService;
 
-    private OptionRepository optionRepository;
     private UserRepository userRepository;
-    private TestRepository testRepository;
+    private RoomRepository roomRepository;
 
     @Autowired
-    public TestController (OptionRepository optionRepository, UserRepository userRepository, TestRepository testRepository) {
-        this.optionRepository = optionRepository;
+    public TestController (UserRepository userRepository, RoomRepository roomRepository) {
         this.userRepository = userRepository;
-        this.testRepository = testRepository;
+        this.roomRepository = roomRepository;
     }
 
     @RequestMapping("/dashboard")
@@ -36,11 +35,10 @@ public class TestController {
     }
 
 
-    @GetMapping("/all_tests")
-    public ResponseEntity<?> mainPage(Principal principalUser) {
-        User user = (User) userDetailsService.loadUserByUsername(principalUser.getName());
-        // return all the tests that this user has created
-        return ResponseEntity.ok(testRepository.findByUser(user));
+    @GetMapping("/all_rooms")
+    public ResponseEntity<?> mainPage() {
+        // return all the chatrooms
+        return ResponseEntity.ok(roomRepository.findAll());
     }
 
 //    @GetMapping("/startGame/{testId}")
