@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="messages")
-public class Message {
+public class ChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -15,7 +15,7 @@ public class Message {
     @ManyToOne(fetch = FetchType.EAGER)
     private User user;
 
-    private String message;
+    private String content;
 
     private String time;
 
@@ -43,11 +43,11 @@ public class Message {
         this.user = user;
     }
 
-    public String getMessage() {
-        return message;
+    public String getContent() {
+        return content;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setContent(String message) {
+        this.content = message;
     }
 }

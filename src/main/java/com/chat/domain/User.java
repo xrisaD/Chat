@@ -7,6 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Entity
@@ -25,6 +26,14 @@ public class User implements UserDetails {
     private String lastname;
     private String city;
     private String zipCode;
+
+    @ManyToMany(fetch=FetchType.EAGER)
+    @JoinTable(
+            name = "friends",
+            joinColumns = @JoinColumn(name = "friend1Id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "friend2Id", referencedColumnName = "id")
+    )
+    private ArrayList<User> friends;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
