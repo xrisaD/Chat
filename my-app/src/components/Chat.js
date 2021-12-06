@@ -1,13 +1,10 @@
 import React, {Component} from "react";
 import './Chat.css';
-import SockJsClient from 'react-stomp';
-import { useState } from 'react';
 
 var stompClient = null;
 class Chat extends React.Component {
 
   constructor(props) {
-    console.log(props.id)
     super(props);
     this.state =
       {
@@ -28,7 +25,7 @@ class Chat extends React.Component {
 
   onConnected = () => {
     // Subscribing to the public topic
-    stompClient.subscribe('/topic/messages', this.onMessageReceived);
+    stompClient.subscribe('/topic/'+this.state.roomId, this.onMessageReceived);
   }
 
   sendMessage = (event) => {
@@ -40,7 +37,7 @@ class Chat extends React.Component {
         roomId: 1
       };
       // send public message
-      stompClient.send("/app/chat", {}, JSON.stringify(chatMessage));
+      stompClient.send("/app/chat/"+this.state.roomId, {}, JSON.stringify(chatMessage));
     }
   }
 

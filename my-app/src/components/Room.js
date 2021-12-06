@@ -3,7 +3,7 @@ import Chat from "./Chat";
 
 const Room  = () => {
     const { id } = useParams();    
-    return <Chat/>
+    return <Chat id={id}/>
 }
 
 export default Room;

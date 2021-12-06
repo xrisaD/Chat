@@ -24,7 +24,7 @@ function App() {
 
           <Route exact path="/dashboard" element={ <RequireAuth redirectTo="/login"> <Dashboard/> </RequireAuth>}/>
 
-          <Route exact path="/room/:id" element={ <RequireAuth redirectTo="/login"> <Chat/> </RequireAuth>}/>
+          <Route exact path="/room/:id" element={ <RequireAuth redirectTo="/login"> <Room/> </RequireAuth>}/>
 
           <Route exact path="/" element={<Home/>} />
 
