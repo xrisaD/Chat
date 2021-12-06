@@ -1,2 +1,7 @@
-package com.chat.domain;public class MessageType {
+package com.chat.domain;
+
+public enum MessageType {
+    CHAT,
+    JOIN,
+    LEAVE
 }

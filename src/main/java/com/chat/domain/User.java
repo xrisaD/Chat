@@ -7,8 +7,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 
 @Entity
 @Table(name="users")
@@ -33,7 +33,8 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "friend1Id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "friend2Id", referencedColumnName = "id")
     )
-    private ArrayList<User> friends;
+    // TODO: add friends
+    private Set<User> friends;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;

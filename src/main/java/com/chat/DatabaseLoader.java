@@ -23,12 +23,14 @@ public class DatabaseLoader implements CommandLineRunner {
 
     @Override
     public void run(String... strings) throws Exception {
+        // users
         User user1 = new User("chrysa", "123");
         userRepository.save(user1);
 
         User user2 = new User("nick", "123");
         userRepository.save(user2);
 
+        // rooms
         Room room1 = new Room("Flowers chat");
         roomRepository.save(room1);
 

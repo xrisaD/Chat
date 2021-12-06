@@ -19,6 +19,20 @@ public class ChatMessage {
 
     private String time;
 
+    private MessageType messageType;
+
+    public ChatMessage(Room room, User user, String content, String time, MessageType messageType) {
+        this.room = room;
+        this.user = user;
+        this.content = content;
+        this.time = time;
+        this.messageType = messageType;
+    }
+
+    public ChatMessage() {
+
+    }
+
     public String getTime() {
         return time;
     }
@@ -49,5 +63,13 @@ public class ChatMessage {
 
     public void setContent(String message) {
         this.content = message;
+    }
+
+    public MessageType getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(MessageType messageType) {
+        this.messageType = messageType;
     }
 }

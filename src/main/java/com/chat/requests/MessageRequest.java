@@ -1,6 +1,7 @@
 package com.chat.requests;
 
-public class Message {
+public class MessageRequest {
+    private String id;
     private Long roomId;
     private String content;
 
