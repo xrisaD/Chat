@@ -11,4 +11,5 @@
 * Hibernate: implementation of JPA (Java Persistence Architecture)
 * React: Front-end framework
 * Axios: Javascript library used to make HTTP requests
+* SockJS and STOMP
 * H2 Database
