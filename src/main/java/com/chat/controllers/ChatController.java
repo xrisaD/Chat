@@ -11,8 +11,10 @@ import com.chat.requests.MessageRequest;
 import com.chat.responses.MessageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,27 +42,29 @@ public class ChatController {
     }
 
     @GetMapping("/all_rooms")
+    @CrossOrigin
     public ResponseEntity<?> mainPage() {
         // return all the chatrooms
         return ResponseEntity.ok(roomRepository.findAll());
     }
 
-    @MessageMapping("/chat")
-    @SendTo("/topic/messages")
+    @Autowired
+    private SimpMessageSendingOperations messagingTemplate;
+
+    @MessageMapping("/chat/{roomId}")
     @CrossOrigin
-    public MessageResponse send(MessageRequest message) throws Exception {
-        System.out.println("message");
-        System.out.println(message);
+    public void send(@DestinationVariable Long roomId, MessageRequest message) throws Exception {
+        // TODO: change this line
         User user = userRepository.findById(1L).get();
         // get time
         String time = new SimpleDateFormat("HH:mm").format(new Date());
         // get room
-        Optional<Room> roomOptional = roomRepository.findById(1L);
+        Optional<Room> roomOptional = roomRepository.findById(roomId);
 
         ChatMessage chatMessage = new ChatMessage(roomOptional.get(), user, message.getContent(), time, MessageType.CHAT);
         messageRepository.save(chatMessage);
 
-        return new MessageResponse(user.getUsername(), message.getContent(), time);
+        messagingTemplate.convertAndSend("/topic/"+roomId, new MessageResponse(user.getUsername(), message.getContent(), time));
     }
 
 //    @Autowired
