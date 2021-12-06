@@ -1,0 +1,46 @@
+* {
+  font-size: medium;
+}
+
+
+.messages-container {
+    overflow-y: scroll;
+    height: 50vh;
+    margin: 10px;
+}
+
+.message-container {
+    border: 2px solid gray;
+    background-color: #76424e;
+    border-radius: 10px;
+    margin: 20px;
+  }
+
+.darker {
+    border-color: #ccc;
+    background-color: #110022;
+}
+
+.rigth-container {
+    float: right;
+}
+
+.left-container {
+    float: left;
+}
+  
+  /* Style time text */
+  .time-right {
+    float: right;
+    color: #aaa;
+  }
+  
+  /* Style time text */
+  .time-left {
+    float: left;
+    color: #999;
+  }
+
+.form-message {
+    padding-top: 2%;
+}

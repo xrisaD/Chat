@@ -19,6 +19,7 @@
     "react-scroll": "^1.8.4",
     "react-stomp": "^5.1.0",
     "react-talk": "^1.0.0",
+    "sockjs": "^0.3.24",
     "sockjs-client": "^1.5.2",
     "web-vitals": "^1.1.2"
   },

@@ -8,7 +8,6 @@ import axios from "axios";
 import { myInterceptor } from "./Interceptors";
 import React, { useState, useEffect } from "react"; 
 import Dashboard from "./components/dashboard";
-import {CustomNavbar}  from "./components/Navbar";
 import Chat from "./components/Chat";
 import Room from "./components/Room";
 
@@ -25,7 +24,7 @@ function App() {
 
           <Route exact path="/dashboard" element={ <RequireAuth redirectTo="/login"> <Dashboard/> </RequireAuth>}/>
 
-          <Route exact path="/room/:r" element={ <RequireAuth redirectTo="/login"> <Room/> </RequireAuth>}/>
+          <Route exact path="/room/:id" element={ <RequireAuth redirectTo="/login"> <Chat/> </RequireAuth>}/>
 
           <Route exact path="/" element={<Home/>} />
 

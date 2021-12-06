@@ -1,62 +1,104 @@
-import React from "react";
-import SockJsClient from "react-stomp";
-import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
-import {
-  MainContainer,
-  ChatContainer,
-  MessageList,
-  Message,
-  MessageInput,
-} from "@chatscope/chat-ui-kit-react";
+import React, {Component} from "react";
+import './Chat.css';
+import SockJsClient from 'react-stomp';
+import { useState } from 'react';
 
+var stompClient = null;
 class Chat extends React.Component {
-    constructor(props) {
-      super(props);
-      // randomUserId is used to emulate a unique user id for this demo usage
-      this.randomUserName = "user";
-      this.randomUserId = "id";
-      this.state = {
-        clientConnected: false,
-        messages: [{"message":"hey"}]
+
+  constructor(props) {
+    console.log(props.id)
+    super(props);
+    this.state =
+      {
+        username: "chrysa",
+        roomId: props.id,
+        content: "",
+        messages: []
       };
-    }
-  
-    onMessageReceive = (msg, topic) => {
-        console.log("RECEIVE  "+msg);
-      this.setState(prevState => ({
-        messages: [...prevState.messages, msg]
-      }));
-    }
-  
-    sendMessage = (msg, selfMsg) => {
-        console.log("SENDDD  "+msg)
-        console.log(selfMsg)
-      try {
-        this.clientRef.sendMessage("/app/chat", JSON.stringify(selfMsg));
-        return true;
-      } catch(e) {
-        return false;
-      }
-    }
-  
-    // componentWillMount() {
-    //   Fetch("/history", {
-    //     method: "GET"
-    //   }).then((response) => {
-    //     this.setState({ messages: response.body });
-    //   });
-    // }
-  
-    render() {
-      const wsSourceUrl = "http://localhost:8080/chat";
-      return (
-        <div>
-          
-  
-    
-        </div>
-      );
+  }
+
+  connect = () => {
+      const Stomp = require('stompjs');
+      var SockJS = require('sockjs-client');
+      SockJS = new SockJS('http://localhost:8080/ws');
+      stompClient = Stomp.over(SockJS);
+      stompClient.connect({}, this.onConnected, this.onError);
+  }
+
+  onConnected = () => {
+    // Subscribing to the public topic
+    stompClient.subscribe('/topic/messages', this.onMessageReceived);
+  }
+
+  sendMessage = (event) => {
+    event.preventDefault();
+    if (stompClient) {
+      var chatMessage = {
+        id: this.state.username,
+        content: this.state.content,
+        roomId: 1
+      };
+      // send public message
+      stompClient.send("/app/chat", {}, JSON.stringify(chatMessage));
     }
   }
 
-  export default Chat;
+  onMessageReceived = (payload) => {
+      var body = JSON.parse(payload.body);
+      // save message
+      this.state.messages.push({"sender": body.useState, "content": body.content, "time": body.time})
+      this.setState(this.state)
+  }
+
+
+  
+  onError = (error) => {
+    this.setState({
+      error: 'Could not connect you to the Chat Room Server. Please refresh this page and try again!'
+    })
+  }
+
+  fetchHostory = () => {
+    alert('History Not Available!\nIt is Not Yet Implemented!');
+  }
+
+  componentDidMount() {
+    this.connect();
+
+  }
+
+  handleMessageChange = (e) => {
+    this.setState({content: e.target.value});
+  }
+
+  render() {
+      return (
+      <div className="chat-container">
+        <div className="messages-container">
+            {this.state.messages.map((value, i) =>{
+              if (value.sender === this.state.username){
+                return (<div class="message-container" key={i}>
+                    <p> {value.sender}</p>
+                    <p>{value.content}</p>
+                    <span className="time-right">{value.time}</span>
+                </div>)
+              } else {
+                return (<div class="message-container darker" key={i}>
+                    <p> Me</p>
+                    <p>{value.content}</p>
+                    <span className="time-right">{value.time}</span>
+                </div>)
+              }
+              })}
+            
+        </div>
+        <form className="form-message">
+          <input className="message-input" type="text" name="name" placeholder="Type your message" value={this.state.content} onChange={this.handleMessageChange} />
+          <input type="submit" value="Submit" onClick={this.sendMessage}/>
+        </form>
+     </div>)
+  }
+}
+
+export default Chat;

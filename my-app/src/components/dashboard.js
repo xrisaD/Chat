@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Button from 'react-bootstrap/Button';
 import { useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import axios from "axios";
 
 const Dashboard  = () => {
@@ -19,18 +20,13 @@ const Dashboard  = () => {
     })
   }, []);
 
-  const Room = (props) => {
-    return <li onClick={ () => navigateToRoom(props.id)}>{ props.name }</li>;
-  }
-
-  function navigateToRoom(id) {
-    navigate("/room/"+id);
-  }
-
   const getRooms = () => {
     if (rooms!=null){
       return <div>
-      {rooms.map((room) => <Room key={room.id} name={room.name} id={room.id} />)}
+      {rooms.map((room) => 
+      <Link key={room.id} to={`/room/${room.id}`}>
+        <p>{room.name}</p>
+      </Link>)}
       </div>
     }
   }
