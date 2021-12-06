@@ -5,10 +5,6 @@
 * RESTful Web Service developed with Spring Boot
 * React client
 
-### Authentication/Authorization techniques: 
-* Token stored at the Authentication header, for common HTTP requests 
-* Ticket-based authentication system for Websockets (SockJS)
-
 ### Technologies used:
 * RESTful Web Services
 * WebSockets
