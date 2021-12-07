@@ -16,9 +16,10 @@ class Chat extends React.Component {
   }
 
   connect = () => {
+      const jwtToken = localStorage.getItem("authorization");
       const Stomp = require('stompjs');
       var SockJS = require('sockjs-client');
-      SockJS = new SockJS('http://localhost:8080/ws');
+      SockJS = new SockJS('http://localhost:8080/ws/?access_token='+jwtToken);
       stompClient = Stomp.over(SockJS);
       stompClient.connect({}, this.onConnected, this.onError);
   }

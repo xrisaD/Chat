@@ -7,7 +7,14 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
@@ -85,6 +92,10 @@ public class JWTTokenHelper {
         return expireDate.before(new Date());
     }
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     private Date getExpirationDate(String token) {
         Date expireDate;
@@ -118,6 +129,23 @@ public class JWTTokenHelper {
         return null;
     }
 
+    public void filter(HttpServletRequest request, String token, UserDetailsService userDetailsService) {
+        if (token != null) {
+            String userName = getUsernameFromToken(token);
+            if(null != userName) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+                if(validateToken(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authentication.setDetails(new WebAuthenticationDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            }
+        }
+    }
+    public String getTokenWebSocket(HttpServletRequest request) {
+        System.out.println(request.getParameter("access_token"));
+        return request.getParameter("access_token");
+    }
     public String getAuthHeaderFromHeader(HttpServletRequest request) {
         return request.getHeader("Authorization");
     }
