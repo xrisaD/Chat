@@ -5,6 +5,7 @@ var stompClient = null;
 class Chat extends React.Component {
 
   constructor(props) {
+    console.log("ID"+props.id)
     super(props);
     this.state =
       {
@@ -47,10 +48,9 @@ class Chat extends React.Component {
       // save message
       this.state.messages.push({"sender": body.useState, "content": body.content, "time": body.time})
       this.setState(this.state)
+      this.props.parentCallback(this.state.roomId);
   }
 
-
-  
   onError = (error) => {
     this.setState({
       error: 'Could not connect you to the Chat Room Server. Please refresh this page and try again!'
@@ -63,7 +63,6 @@ class Chat extends React.Component {
 
   componentDidMount() {
     this.connect();
-
   }
 
   handleMessageChange = (e) => {
@@ -76,13 +75,13 @@ class Chat extends React.Component {
         <div className="messages-container">
             {this.state.messages.map((value, i) =>{
               if (value.sender === this.state.username){
-                return (<div class="message-container" key={i}>
+                return (<div className="message-container" key={i}>
                     <p> {value.sender}</p>
                     <p>{value.content}</p>
                     <span className="time-right">{value.time}</span>
                 </div>)
               } else {
-                return (<div class="message-container darker" key={i}>
+                return (<div className="message-container darker" key={i}>
                     <p> Me</p>
                     <p>{value.content}</p>
                     <span className="time-right">{value.time}</span>
