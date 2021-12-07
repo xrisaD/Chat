@@ -5,11 +5,11 @@ var stompClient = null;
 class Chat extends React.Component {
 
   constructor(props) {
-    console.log("ID"+props.id)
+    console.log(props.username)
     super(props);
     this.state =
       {
-        username: "chrysa",
+        username: props.username,
         roomId: props.id,
         content: "",
         messages: []
@@ -27,17 +27,17 @@ class Chat extends React.Component {
 
   onConnected = () => {
     // Subscribing to the public topic
-    stompClient.subscribe('/topic/'+this.state.roomId, this.onMessageReceived);
+    stompClient.subscribe('/topic/' + this.state.roomId, this.onMessageReceived);
   }
 
   sendMessage = (event) => {
     event.preventDefault();
     if (stompClient) {
       var chatMessage = {
-        id: this.state.username,
         content: this.state.content,
         roomId: 1
       };
+      console.log(this.state.username)
       // send public message
       stompClient.send("/app/chat/"+this.state.roomId, {}, JSON.stringify(chatMessage));
     }
@@ -45,10 +45,13 @@ class Chat extends React.Component {
 
   onMessageReceived = (payload) => {
       var body = JSON.parse(payload.body);
+      console.log(body)
       // save message
-      this.state.messages.push({"sender": body.useState, "content": body.content, "time": body.time})
+      this.state.messages.push({"sender": body.username, "content": body.content, "time": body.time})
       this.setState(this.state)
-      this.props.parentCallback(this.state.roomId);
+      if (body.username != this.state.username) {
+        this.props.parentCallback(this.state.roomId);
+      }
   }
 
   onError = (error) => {
@@ -74,7 +77,7 @@ class Chat extends React.Component {
       <div className="chat-container">
         <div className="messages-container">
             {this.state.messages.map((value, i) =>{
-              if (value.sender === this.state.username){
+              if (value.sender !== this.state.username){
                 return (<div className="message-container" key={i}>
                     <p> {value.sender}</p>
                     <p>{value.content}</p>
