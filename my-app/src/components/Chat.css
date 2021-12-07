@@ -42,7 +42,8 @@
   }
 
 .form-message {
-    /* padding-top: 2%; */
+  position: absolute; 
+  bottom: 0; 
 }
 
 .list-with-chats {
@@ -51,6 +52,9 @@
   margin: 2%;
 }
 
+.chat-container {
+  height: 100%;
+}
 .chat-box-container {
   width: 100%;
 }

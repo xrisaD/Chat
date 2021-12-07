@@ -7,7 +7,7 @@ import Signup from "./components/signup";
 import axios from "axios";
 import { myInterceptor } from "./Interceptors";
 import React, { useState, useEffect } from "react"; 
-import Dashboard from "./components/dashboard";
+import Dashboard from "./components/DashboardNew";
 import Chat from "./components/Chat";
 import Room from "./components/Room";
 
