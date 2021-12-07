@@ -22,7 +22,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
-public class JWTTokenHelper {
+public class JWTHelper {
 
 
     @Value("${jwt.auth.app}")

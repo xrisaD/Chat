@@ -10,6 +10,7 @@ import com.chat.repositories.UserRepository;
 import com.chat.requests.MessageRequest;
 import com.chat.responses.MessageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -17,6 +18,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -55,7 +57,7 @@ public class ChatController {
     @CrossOrigin
     public void send(@DestinationVariable Long roomId, MessageRequest message) throws Exception {
         // TODO: change this line
-        User user = userRepository.findById(1L).get();
+        User user = userRepository.findById(1L).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));;
         // get time
         String time = new SimpleDateFormat("HH:mm").format(new Date());
         // get room

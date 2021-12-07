@@ -4,7 +4,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Optional;
 
-import com.chat.config.JWTTokenHelper;
+import com.chat.config.JWTHelper;
 import com.chat.domain.User;
 import com.chat.repositories.UserRepository;
 import com.chat.requests.AuthenticationRequest;
@@ -34,7 +34,7 @@ public class AuthenticationController {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    JWTTokenHelper jWTTokenHelper;
+    JWTHelper jWTTokenHelper;
 
     @Autowired
     private UserDetailsService userDetailsService;
