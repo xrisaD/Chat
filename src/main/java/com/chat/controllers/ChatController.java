@@ -16,10 +16,12 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -45,9 +47,17 @@ public class ChatController {
 
     @GetMapping("/all_rooms")
     @CrossOrigin
-    public ResponseEntity<?> mainPage() {
+    public ResponseEntity<?> allRooms() {
         // return all the chatrooms
         return ResponseEntity.ok(roomRepository.findAll());
+    }
+    @GetMapping("/info")
+    @CrossOrigin
+    public ResponseEntity<?> info(Principal principal) {
+        User user = userRepository.findByUsername(principal.getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        // return username
+        System.out.println(user.getUsername());
+        return ResponseEntity.ok(user.getUsername());
     }
 
     @Autowired
@@ -55,9 +65,8 @@ public class ChatController {
 
     @MessageMapping("/chat/{roomId}")
     @CrossOrigin
-    public void send(@DestinationVariable Long roomId, MessageRequest message) throws Exception {
-        // TODO: change this line
-        User user = userRepository.findById(1L).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));;
+    public void send(@DestinationVariable Long roomId, MessageRequest message, Principal principal) throws Exception {
+        User user = userRepository.findByUsername(principal.getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));;
         // get time
         String time = new SimpleDateFormat("HH:mm").format(new Date());
         // get room
@@ -66,7 +75,7 @@ public class ChatController {
         ChatMessage chatMessage = new ChatMessage(roomOptional.get(), user, message.getContent(), time, MessageType.CHAT);
         messageRepository.save(chatMessage);
 
-        messagingTemplate.convertAndSend("/topic/"+roomId, new MessageResponse(user.getUsername(), message.getContent(), time));
+        messagingTemplate.convertAndSend("/topic/"+roomId, new MessageResponse(user.getUsername(), message.getContent(), time, roomId));
     }
 
 //    @Autowired
