@@ -1,8 +1,13 @@
 package com.chat.requests;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Arrays;
+
 public class MessageRequest {
     private Long roomId;
     private String content;
+
 
     public String getContent() {
         return content;
@@ -20,9 +25,10 @@ public class MessageRequest {
         this.roomId = roomId;
     }
 
+
     @Override
     public String toString() {
-        return "Message{" +
+        return "MessageRequest{" +
                 "roomId=" + roomId +
                 ", content='" + content + '\'' +
                 '}';

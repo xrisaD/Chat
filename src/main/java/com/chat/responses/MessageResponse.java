@@ -5,12 +5,14 @@ public class MessageResponse {
     private String content;
     private String time;
     private Long roomId;
+    private String fileName;
 
-    public MessageResponse(String username, String content, String time, Long roomId) {
+    public MessageResponse(String username, String content, String time, Long roomId, String fileName) {
         this.username = username;
         this.content = content;
         this.time = time;
         this.roomId = roomId;
+        this.fileName = fileName;
     }
 
     public String getUsername() {
@@ -43,5 +45,13 @@ public class MessageResponse {
 
     public void setRoomId(Long roomId) {
         this.roomId = roomId;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

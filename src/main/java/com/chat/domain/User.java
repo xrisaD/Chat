@@ -27,14 +27,6 @@ public class User implements UserDetails {
     private String city;
     private String zipCode;
 
-    @ManyToMany(fetch=FetchType.EAGER)
-    @JoinTable(
-            name = "friends",
-            joinColumns = @JoinColumn(name = "friend1Id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "friend2Id", referencedColumnName = "id")
-    )
-    // TODO: add friends
-    private Set<User> friends;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;

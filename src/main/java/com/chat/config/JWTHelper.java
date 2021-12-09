@@ -143,8 +143,6 @@ public class JWTHelper {
         }
     }
     public String getTokenWebSocket(HttpServletRequest request) {
-        // TODO: check ti tha ginei an de perasw access_token, tha einai null?
-        System.out.println(request.getParameter("access_token"));
         return request.getParameter("access_token");
     }
     public String getAuthHeaderFromHeader(HttpServletRequest request) {

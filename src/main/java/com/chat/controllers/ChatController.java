@@ -9,9 +9,15 @@ import com.chat.repositories.RoomRepository;
 import com.chat.repositories.UserRepository;
 import com.chat.requests.MessageRequest;
 import com.chat.responses.MessageResponse;
+import com.chat.services.StorageService;
+import com.sun.istack.NotNull;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -19,8 +25,10 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.constraints.Null;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,18 +39,20 @@ import java.util.Optional;
 @RequestMapping("/")
 public class ChatController {
 
-    @Autowired
     private UserDetailsService userDetailsService;
+    private final StorageService storageService;
 
     private UserRepository userRepository;
     private RoomRepository roomRepository;
     private MessageRepository messageRepository;
 
     @Autowired
-    public ChatController(UserRepository userRepository, RoomRepository roomRepository, MessageRepository messageRepository) {
+    public ChatController(UserDetailsService userDetailsService, UserRepository userRepository, RoomRepository roomRepository, MessageRepository messageRepository, StorageService storageService) {
+        this.userDetailsService = userDetailsService;
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.messageRepository = messageRepository;
+        this.storageService = storageService;
     }
 
     @GetMapping("/all_rooms")
@@ -56,17 +66,20 @@ public class ChatController {
     public ResponseEntity<?> info(Principal principal) {
         User user = userRepository.findByUsername(principal.getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         // return username
-        System.out.println(user.getUsername());
         return ResponseEntity.ok(user.getUsername());
     }
 
     @Autowired
     private SimpMessageSendingOperations messagingTemplate;
 
-    @MessageMapping("/chat/{roomId}")
+    @PostMapping("/chat")
     @CrossOrigin
-    public void send(@DestinationVariable Long roomId, MessageRequest message, Principal principal) throws Exception {
+    public void send(@RequestPart("message") MessageRequest message, @RequestPart("file") @Nullable MultipartFile file, Principal principal) throws Exception {
+        System.out.println(message);
+        System.out.println(file);
+        Long roomId = message.getRoomId();
         User user = userRepository.findByUsername(principal.getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));;
+
         // get time
         String time = new SimpleDateFormat("HH:mm").format(new Date());
         // get room
@@ -75,30 +88,28 @@ public class ChatController {
         ChatMessage chatMessage = new ChatMessage(roomOptional.get(), user, message.getContent(), time, MessageType.CHAT);
         messageRepository.save(chatMessage);
 
-        messagingTemplate.convertAndSend("/topic/"+roomId, new MessageResponse(user.getUsername(), message.getContent(), time, roomId));
+        String fileName = null;
+        if (file != null) {
+            // generate a name for the file
+            fileName = RandomStringUtils.randomAlphanumeric(8);
+        }
+        messagingTemplate.convertAndSend("/topic/"+roomId, new MessageResponse(user.getUsername(), message.getContent(), time, roomId, fileName));
+
     }
 
-//    @Autowired
-//    SimpMessagingTemplate template;
+    @PostMapping("/sendFile")
+    @CrossOrigin
+    public void send(@RequestParam("file") MultipartFile file, Principal principal) throws Exception {
+        System.out.println(file);
 
-//    @PostMapping("/send")
-//    public ResponseEntity<Void> sendMessage(@RequestBody Message textMessageDTO) {
-//        System.out.println("ONE  "+textMessageDTO);
-//        template.convertAndSend("/topic/messages", textMessageDTO);
-//        return new ResponseEntity<>(HttpStatus.OK);
-//    }
-//
-//    @MessageMapping("/sendMessage")
-//    public void receiveMessage(@Payload Message textMessageDTO) {
-//        // receive message from client
-//        System.out.println("TWO  "+textMessageDTO);
-//        System.out.println(textMessageDTO);
-//    }
-//
-//    @SendTo("/topic/messages")
-//    public Message broadcastMessage(@Payload Message textMessageDTO) {
-//        System.out.println("3  "+textMessageDTO);
-//        return textMessageDTO;
-//    }
+    }
 
+    @GetMapping("/files/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+
+        Resource file = storageService.loadAsResource(filename);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+    }
 }
