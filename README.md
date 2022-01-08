@@ -2,7 +2,6 @@
 
 <br>
 
-### Applications
 * RESTful Web Service developed with Spring Boot
 * React client
 
