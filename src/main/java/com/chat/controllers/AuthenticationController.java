@@ -44,7 +44,7 @@ public class AuthenticationController {
     @PostMapping("/login")
     @CrossOrigin
     public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest) throws InvalidKeySpecException, NoSuchAlgorithmException {
-        System.out.println("LOGIN");
+        
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 authenticationRequest.getUsername(), authenticationRequest.getPassword()));
 
