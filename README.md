@@ -21,4 +21,4 @@
 Run the ChatApplication class and access it using a browser using the following link: https://chat.localhost/.
 
 ### React client chat
-![chat](./images/chat.png)
+![chat](./images/chat.PNG)
