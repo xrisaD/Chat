@@ -17,6 +17,7 @@ A Chat Client-Server System with user registration, chat rooms and ability to se
 * Axios: Javascript library used to make HTTP requests
 * SockJS and STOMP
 * H2 Database
+* HTTPS
 
 ### Techniques used:
 * Token-based authentication
