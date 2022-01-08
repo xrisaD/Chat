@@ -1,10 +1,16 @@
 package com.chat.domain;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
 
+/**
+ * Message sent to a chat room from an user
+ */
 @Entity
 @Table(name="messages")
-public class ChatMessage {
+public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,28 +23,29 @@ public class ChatMessage {
 
     private String content;
 
-    private String time;
+    private LocalDateTime date;
 
-    private MessageType messageType;
+    @OneToOne(fetch = FetchType.EAGER)
+    private File file;
 
-    public ChatMessage(Room room, User user, String content, String time, MessageType messageType) {
+    public Message(Room room, User user, String content, LocalDateTime date, File file) {
         this.room = room;
         this.user = user;
         this.content = content;
-        this.time = time;
-        this.messageType = messageType;
+        this.date = date;
+        this.file = file;
     }
 
-    public ChatMessage() {
+    public Message() {
 
     }
 
-    public String getTime() {
-        return time;
+    public LocalDateTime getDate() {
+        return date;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setDate(LocalDateTime time) {
+        this.date = time;
     }
 
     public Room getRoom() {
@@ -65,11 +72,19 @@ public class ChatMessage {
         this.content = message;
     }
 
-    public MessageType getMessageType() {
-        return messageType;
+    public Long getId() {
+        return id;
     }
 
-    public void setMessageType(MessageType messageType) {
-        this.messageType = messageType;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
     }
 }

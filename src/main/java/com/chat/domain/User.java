@@ -10,6 +10,10 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.Set;
 
+/**
+ * a User
+ * this class contains all user's data
+ */
 @Entity
 @Table(name="users")
 public class User implements UserDetails {

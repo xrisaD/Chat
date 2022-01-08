@@ -1,18 +1,21 @@
 package com.chat.responses;
 
+import com.chat.domain.File;
+
 public class MessageResponse {
     private String username;
     private String content;
     private String time;
     private Long roomId;
-    private String fileName;
+    private Long messageId;
+    private File file;
 
-    public MessageResponse(String username, String content, String time, Long roomId, String fileName) {
+    public MessageResponse(String username, String content, String time, Long roomId, File file) {
         this.username = username;
         this.content = content;
         this.time = time;
         this.roomId = roomId;
-        this.fileName = fileName;
+        this.file = file;
     }
 
     public String getUsername() {
@@ -47,11 +50,20 @@ public class MessageResponse {
         this.roomId = roomId;
     }
 
-    public String getFileName() {
-        return fileName;
+
+    public Long getMessageId() {
+        return messageId;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public void setMessageId(Long messageId) {
+        this.messageId = messageId;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
     }
 }

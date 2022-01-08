@@ -26,45 +26,40 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/auth")
 @CrossOrigin
 public class AuthenticationController {
 
-    @Autowired
     private AuthenticationManager authenticationManager;
-
-    @Autowired
-    JWTHelper jWTTokenHelper;
-
-    @Autowired
-    private UserDetailsService userDetailsService;
-
+    private JWTHelper jWTTokenHelper;
     private UserRepository userRepository;
 
     @Autowired
-    public AuthenticationController (UserRepository userRepository) {
+    public AuthenticationController (UserRepository userRepository, JWTHelper jWTTokenHelper, AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
+        this.jWTTokenHelper = jWTTokenHelper;
+        this.authenticationManager = authenticationManager;
     }
 
-    @PostMapping("/auth/login")
+    @PostMapping("/login")
+    @CrossOrigin
     public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest) throws InvalidKeySpecException, NoSuchAlgorithmException {
-
-        final Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+        System.out.println("LOGIN");
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 authenticationRequest.getUsername(), authenticationRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         User user = (User) authentication.getPrincipal();
+
         String jwtToken = jWTTokenHelper.generateToken(user.getUsername());
 
-        LoginResponse response = new LoginResponse();
-        response.setToken(jwtToken);
-        response.setId(user.getId());
+        LoginResponse response = new LoginResponse(jwtToken, user.getId());
 
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/auth/signup")
+    @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody User user) throws InvalidKeySpecException, NoSuchAlgorithmException {
 
         // username must be unique
@@ -75,16 +70,17 @@ public class AuthenticationController {
 
         // save user
         userRepository.save(user);
-        // geenrate and return token
+        // generate and return token
         String jwtToken = jWTTokenHelper.generateToken(user.getUsername());
 
-        LoginResponse response = new LoginResponse();
+        LoginResponse response = new LoginResponse(jwtToken, user.getId());
         response.setToken(jwtToken);
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/authorize")
+    @CrossOrigin
     public ResponseEntity<?> authenticate() {
         return ResponseEntity.ok("ok");
     }

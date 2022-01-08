@@ -42,15 +42,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
         http.antMatcher("/**").sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and()
-                .authorizeRequests((request) -> request.antMatchers("/h2-console/**", "/api/v1/auth/login", "/api/v1/auth/signup", "/ws/**").permitAll().anyRequest().authenticated())
+                .authorizeRequests((request) -> request.antMatchers("/","/manifest.json", "/chat/**", "/static/**","/h2-console/**", "/auth/login", "/auth/signup", "/ws/**").permitAll().anyRequest().authenticated())
                 .antMatcher("/**").addFilterBefore(new JWTAuthenticationFilter(userService, jWTTokenHelper), UsernamePasswordAuthenticationFilter.class);
 
-        //.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()"/ws/**"
-//        http.csrf().disable().cors().and().headers().frameOptions().disable();
         http.cors().and().csrf().disable();
     }
-
 
 }

@@ -130,6 +130,7 @@ public class JWTHelper {
     }
 
     public void filter(HttpServletRequest request, String token, UserDetailsService userDetailsService) {
+
         if (token != null) {
             String userName = getUsernameFromToken(token);
             if(null != userName) {

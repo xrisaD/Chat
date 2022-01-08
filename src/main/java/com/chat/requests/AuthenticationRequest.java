@@ -1,5 +1,9 @@
 package com.chat.requests;
 
+/**
+ * Request sent from client to server
+ * in order to check if the client is authenticated
+ */
 public class AuthenticationRequest {
 
     private String username;

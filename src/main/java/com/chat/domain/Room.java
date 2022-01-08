@@ -2,6 +2,9 @@ package com.chat.domain;
 
 import javax.persistence.*;
 
+/**
+ * a Chat Room
+ */
 @Entity
 @Table(name="rooms")
 public class Room {

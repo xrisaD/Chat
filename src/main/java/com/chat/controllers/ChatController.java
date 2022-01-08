@@ -1,58 +1,53 @@
 package com.chat.controllers;
 
-import com.chat.domain.ChatMessage;
-import com.chat.domain.MessageType;
-import com.chat.domain.Room;
-import com.chat.domain.User;
+import com.chat.domain.*;
+import com.chat.repositories.FileRepository;
 import com.chat.repositories.MessageRepository;
 import com.chat.repositories.RoomRepository;
 import com.chat.repositories.UserRepository;
 import com.chat.requests.MessageRequest;
 import com.chat.responses.MessageResponse;
-import com.chat.services.StorageService;
-import com.sun.istack.NotNull;
-import org.apache.commons.lang3.RandomStringUtils;
+import com.chat.responses.Metadata;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.constraints.Null;
 import java.security.Principal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 
 @RestController
 @RequestMapping("/")
 public class ChatController {
 
+    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
     private UserDetailsService userDetailsService;
-    private final StorageService storageService;
 
     private UserRepository userRepository;
     private RoomRepository roomRepository;
     private MessageRepository messageRepository;
+    private FileRepository fileRepository;
 
     @Autowired
-    public ChatController(UserDetailsService userDetailsService, UserRepository userRepository, RoomRepository roomRepository, MessageRepository messageRepository, StorageService storageService) {
+    private SimpMessageSendingOperations messagingTemplate;
+
+    @Autowired
+    public ChatController(UserDetailsService userDetailsService, UserRepository userRepository, RoomRepository roomRepository, MessageRepository messageRepository, FileRepository fileRepository) {
         this.userDetailsService = userDetailsService;
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.messageRepository = messageRepository;
-        this.storageService = storageService;
+        this.fileRepository = fileRepository;
     }
 
     @GetMapping("/all_rooms")
@@ -69,47 +64,62 @@ public class ChatController {
         return ResponseEntity.ok(user.getUsername());
     }
 
-    @Autowired
-    private SimpMessageSendingOperations messagingTemplate;
+    @GetMapping("/history/{id}")
+    @CrossOrigin
+    public ResponseEntity<?> history(@PathVariable("id") Long roomId) {
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        List<Message> messages = messageRepository.findChatMessageByRoomOrderByDateDesc(room);
+
+        if (messages.size() > 10) {
+            messages = messages.subList(0, 10);
+        }
+        Collections.reverse(messages);
+        List<MessageResponse> response = new ArrayList<>();
+        for (int i = 0; i < messages.size(); i++) {
+            Message m = messages.get(i);
+
+            response.add(new MessageResponse(m.getUser().getUsername(), m.getContent(), format.format(m.getDate()), m.getRoom().getId(), m.getFile()));
+        }
+        // return history
+        return ResponseEntity.ok(response);
+    }
+
 
     @PostMapping("/chat")
     @CrossOrigin
     public void send(@RequestPart("message") MessageRequest message, @RequestPart("file") @Nullable MultipartFile file, Principal principal) throws Exception {
-        System.out.println(message);
-        System.out.println(file);
         Long roomId = message.getRoomId();
-        User user = userRepository.findByUsername(principal.getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));;
-
-        // get time
-        String time = new SimpleDateFormat("HH:mm").format(new Date());
+        User user = userRepository.findByUsername(principal.getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         // get room
-        Optional<Room> roomOptional = roomRepository.findById(roomId);
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        ChatMessage chatMessage = new ChatMessage(roomOptional.get(), user, message.getContent(), time, MessageType.CHAT);
+
+        Long fileId = null;
+        String filename = null;
+        File x= null;
+        if (file != null) {
+            filename = file.getOriginalFilename();
+            x = fileRepository.save(new File(file.getBytes(), filename, file.getContentType()));
+            fileId = x.getId();
+        }
+
+        LocalDateTime date = LocalDateTime.now();
+        Message chatMessage = new Message(room, user, message.getContent(), date, x);
         messageRepository.save(chatMessage);
 
-        String fileName = null;
-        if (file != null) {
-            // generate a name for the file
-            fileName = RandomStringUtils.randomAlphanumeric(8);
-        }
-        messagingTemplate.convertAndSend("/topic/"+roomId, new MessageResponse(user.getUsername(), message.getContent(), time, roomId, fileName));
-
+        messagingTemplate.convertAndSend("/topic/"+roomId, new MessageResponse(user.getUsername(), message.getContent(), format.format(date), roomId, x));
     }
 
-    @PostMapping("/sendFile")
+    @GetMapping("/download/{id}")
     @CrossOrigin
-    public void send(@RequestParam("file") MultipartFile file, Principal principal) throws Exception {
-        System.out.println(file);
-
+    public Resource downloadFile(@PathVariable("id") Long id) {
+        byte[] file = fileRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)).getContent();
+        return new ByteArrayResource(file);
     }
-
-    @GetMapping("/files/{filename:.+}")
-    @ResponseBody
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
-
-        Resource file = storageService.loadAsResource(filename);
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+    @GetMapping("/metadata/{id}")
+    @CrossOrigin
+    public Metadata downloadMetadata(@PathVariable("id") Long id) {
+        File file = fileRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return new Metadata(file.getName(), file.getContentType());
     }
 }
