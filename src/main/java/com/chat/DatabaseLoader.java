@@ -13,8 +13,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.Calendar;
 
+/**
+ * Load data to the database
+ */
 @Component
 public class DatabaseLoader implements CommandLineRunner {
 

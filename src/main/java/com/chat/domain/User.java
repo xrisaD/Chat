@@ -12,7 +12,6 @@ import java.util.Set;
 
 /**
  * a User
- * this class contains all user's data
  */
 @Entity
 @Table(name="users")

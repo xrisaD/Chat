@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * Message sent to a chat room from an user
+ * a Message sent to a chat room from a user
  */
 @Entity
 @Table(name="messages")

@@ -37,7 +37,11 @@ public class JWTHelper {
     private SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS256;
 
 
-
+    /**
+     * Returns all claims given the token
+     * @param token authentication token
+     * @return claims
+     */
     private Claims getAllClaimsFromToken(String token) {
         Claims claims;
         try {
@@ -51,7 +55,11 @@ public class JWTHelper {
         return claims;
     }
 
-
+    /**
+     * Returns the username given a token
+     * @param token authentication token
+     * @return username
+     */
     public String getUsernameFromToken(String token) {
         String username;
         try {
@@ -63,6 +71,13 @@ public class JWTHelper {
         return username;
     }
 
+    /**
+     * Generates and returns a token for a specific user given the username
+     * @param username username
+     * @return token for this user
+     * @throws InvalidKeySpecException
+     * @throws NoSuchAlgorithmException
+     */
     public String generateToken(String username) throws InvalidKeySpecException, NoSuchAlgorithmException {
 
         return Jwts.builder()
@@ -78,7 +93,14 @@ public class JWTHelper {
         return new Date(new Date().getTime() + expiresIn * 1000L);
     }
 
+    /**
+     * Given a token and user's data, it validates the token
+     * @param token authentication token
+     * @param userDetails user details
+     * @return if the token is validated or not
+     */
     public Boolean validateToken(String token, UserDetails userDetails) {
+        // get username from token
         final String username = getUsernameFromToken(token);
         return (
                 username != null &&
@@ -87,6 +109,11 @@ public class JWTHelper {
         );
     }
 
+    /**
+     * Returns if the given token has expired or not
+     * @param token authentication token
+     * @return true if the token has expired, else false
+     */
     public boolean isTokenExpired(String token) {
         Date expireDate = getExpirationDate(token);
         return expireDate.before(new Date());
@@ -97,6 +124,11 @@ public class JWTHelper {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Returns the expiration date of the given token
+     * @param token authentication token
+     * @return the token's date of expiration
+     */
     private Date getExpirationDate(String token) {
         Date expireDate;
         try {
@@ -107,7 +139,6 @@ public class JWTHelper {
         }
         return expireDate;
     }
-
 
     public Date getIssuedAtDateFromToken(String token) {
         Date issueAt;
@@ -120,6 +151,11 @@ public class JWTHelper {
         return issueAt;
     }
 
+    /**
+     * Given a request, it returns the token which is placed at the authentication field
+     * @param request a http request from client
+     * @return request's token
+     */
     public String getToken(HttpServletRequest request) {
 
         String authHeader = getAuthHeaderFromHeader(request);
@@ -129,12 +165,22 @@ public class JWTHelper {
         return null;
     }
 
+    /**
+     * The Filter
+     * @param request the HTTP request
+     * @param token the authentication token
+     * @param userDetailsService the user service
+     */
     public void filter(HttpServletRequest request, String token, UserDetailsService userDetailsService) {
-
+        // token is not null
         if (token != null) {
+            // get username from token
             String userName = getUsernameFromToken(token);
-            if(null != userName) {
+            // if the username is not null
+            if(userName != null) {
+                // get user's details given the username
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+                // validate token
                 if(validateToken(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetails(request));

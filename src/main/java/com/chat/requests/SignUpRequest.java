@@ -1,5 +1,8 @@
 package com.chat.requests;
 
+/**
+ * Request sent from a user to sign up
+ */
 public class SignUpRequest {
     private String username;
     private String email;

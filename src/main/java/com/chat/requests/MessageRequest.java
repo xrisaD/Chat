@@ -5,7 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Arrays;
 
 /**
- * Request sent from from
+ * Simple message sent from user
  */
 public class MessageRequest {
     private Long roomId;

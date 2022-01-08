@@ -9,7 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
-
+/**
+ * Filter added to Restful requests
+ */
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     private UserDetailsService userDetailsService;

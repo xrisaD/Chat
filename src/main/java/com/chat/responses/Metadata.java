@@ -1,5 +1,8 @@
 package com.chat.responses;
 
+/**
+ * File's metadata
+ */
 public class Metadata {
     private String name;
 

@@ -13,6 +13,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+* WebSocket Security configuration
+*/
 @Configuration
 @EnableWebSecurity
 @Order(Ordered.HIGHEST_PRECEDENCE)

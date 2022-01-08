@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Filter added to websocket communication
+ */
 public class JWTAuthenticationWebSocketFilter extends OncePerRequestFilter {
 
     private UserDetailsService userDetailsService;

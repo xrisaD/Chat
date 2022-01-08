@@ -2,6 +2,9 @@ package com.chat.responses;
 
 import com.chat.domain.File;
 
+/**
+ * Message sent to users in a chat room
+ */
 public class MessageResponse {
     private String username;
     private String content;

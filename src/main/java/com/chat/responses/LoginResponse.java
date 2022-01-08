@@ -1,6 +1,8 @@
 package com.chat.responses;
 
-
+/**
+ * Login data sent from client
+ */
 public class LoginResponse {
 
     private String token;
