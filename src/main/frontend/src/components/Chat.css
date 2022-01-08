@@ -1,0 +1,94 @@
+* {
+  font-size: medium;
+}
+.chat-box-container {
+  background-color: rgb(202, 202, 206);
+  padding: 5% 0 5% 0;
+  margin: 2%;
+  overflow: hidden;
+  position: relative;
+  height: inherit;
+  width: auto;
+}
+
+.chat-page {
+  width: 100%;
+  height: 100vh;
+  margin: 5%;
+  display:flex;
+  flex-direction: column;
+}
+
+.chat-box-container {
+  height: auto;
+}
+
+ul {
+  list-style-type: none;
+}
+
+li {
+  color: black;
+  border: 1px solid black;
+  border-radius: 20px;
+  background-color: rgb(228, 228, 236);
+  margin:3px;
+}
+
+.messages-container {
+  overflow-y: scroll;
+  height: 30vh;
+  
+}
+
+
+.list-with-rooms {
+  overflow-y: scroll;
+  height: 30vh;
+}
+
+.list-scroll {
+  height: 50vh;
+}
+
+  /* Style time text */
+  .time-right {
+    float: right;
+    color: #aaa;
+  }
+  
+  /* Style time text */
+  .time-left {
+    float: left;
+    color: #999;
+  }
+
+  .rigth-container {
+    float: right;
+}
+
+.left-container {
+    float: left;
+}
+  .message-container {
+    margin: 30px;
+  }
+  .message-content {
+    background-color: #85626a;
+    border: 2px solid gray;
+    border-radius: 10px;
+  }
+.darker {
+    border-color: #ccc;
+    background-color: #596392;
+}
+.profile-image {
+  padding: 0px;
+}
+.message-container-inner {
+  padding: 0px;
+}
+
+img {
+  border-radius: 50%;
+}
