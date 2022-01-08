@@ -1,7 +1,11 @@
 # Chat - Network Programming Project
 
 <br>
+A chat Client-Server system with user registration, chat rooms and ability to send files.
+<br>
+<br>
 
+### Client-Server System
 * RESTful Web Service developed with Spring Boot
 * React client
 
