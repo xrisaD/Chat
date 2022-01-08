@@ -17,8 +17,8 @@
 ### Techniques used:
 * Token-based authentication
 
-### How to run 
-Run the ChatApplication class and access it using a browser using the following link: https://chat.localhost/.
-
 ### The Chat
 ![chat](./images/chat.PNG)
+
+### How to run 
+Run the ChatApplication class and access it using a browser using the following link: https://chat.localhost/.
