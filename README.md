@@ -22,8 +22,6 @@ A Chat Client-Server System with user registration, chat rooms and ability to se
 ### Techniques used:
 * Token-based authentication
 
-### The Chat
-![chat](./images/chat.PNG)
 
 ### How to run 
 Run the ChatApplication class and access it using a browser using the following link: https://chat.localhost/.
