@@ -1,4 +1,4 @@
-# Chat - Network Programming Project
+# Chat
 
 <br>
 A Chat Client-Server System with user registration, chat rooms and ability to send files.
